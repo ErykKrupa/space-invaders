@@ -1,0 +1,5 @@
+*.idea/
+*.iml
+*.csv
+*.xlsx
+out/
