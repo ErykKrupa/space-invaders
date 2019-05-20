@@ -6,14 +6,17 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import static sample.MenuController.menuStage;
+
 public class Main extends Application {
 
   @Override
-  public void start(Stage primaryStage) throws Exception {
-    Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
-    primaryStage.setTitle("Space Invaders");
-    primaryStage.setScene(new Scene(root, 300, 275));
-    primaryStage.show();
+  public void start(Stage stage) throws Exception {
+    Parent root = FXMLLoader.load(getClass().getResource("menu.fxml"));
+    menuStage.setTitle("Space Invaders");
+    menuStage.setScene(new Scene(root, 740, 500));
+    menuStage.setResizable(false);
+    menuStage.show();
   }
 
   public static void main(String[] args) {
