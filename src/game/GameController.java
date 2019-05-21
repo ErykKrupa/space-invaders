@@ -1,31 +1,76 @@
 package game;
 
-import java.awt.*;
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Polygon;
+
+import java.util.Random;
 
 import static main.Main.stage;
 
 public class GameController {
-  private Polygon ship1 =
-      new Polygon(
-          new int[] {-25, -17, -15, -15, 0, 15, 15, 17, 25},
-          new int[] {20, -5, 10, 5, -40, 5, 10, -5, 20},
-          9);
-  private Polygon ship2 =
-      new Polygon(
-          new int[] {-25, -12, -5, 0, 5, 12, 25}, new int[] {20, -30, 5, -5, 5, -30, 20}, 7);
-  private Polygon enemy1 =
-      new Polygon(
-          new int[] {-5, -10, -10, -20, -10, 10, 20, 10, 10, 5},
-          new int[] {10, 30, 10, 0, -10, -10, 0, 10, 30, 10},
-          10);
-  private Polygon enemy2 =
-      new Polygon(
-          new int[] {-10, -15, -15, -20, -15, -15, -10, 10, 15, 15, 20, 15, 15, 30},
-          new int[] {10, 30, 5, 0, -5, -30, -10, -10, -30, -5, 0, 5, 10, 10},
-          14);
+  private double[] ship1 =
+      new double[] {
+        -25.0, 20.0, -17.0, -5.0, -15.0, 10.0, -15.0, 5.0, 0.0, -40.0, 15.0, 5.0, 15.0, 10.0, 17.0,
+        -5.0, 25.0, 20.0
+      };
+  private double[] ship2 =
+      new double[] {
+        -25.0, 20.0, -12.0, -30.0, -5.0, 5.0, 0.0, -5.0, 5.0, 5.0, 12.0, -30.0, 25.0, 20.0
+      };
+  private double[] enemy1 =
+      new double[] {
+        -5.0, 10.0, -10.0, 30.0, -10.0, 10.0, -20.0, 0.0, -10.0, -10.0, 10.0, -10.0, 20.0, 0.0,
+        10.0, 10.0, 10.0, 30.0, 5.0, 10.0
+      };
+  private double[] enemy2 =
+      new double[] {
+        -10.0, 10.0, -15.0, 30.0, -15.0, 5.0, -20.0, 0.0, -15.0, -5.0, -15.0, -30.0, -10.0, -10.0,
+        10.0, -10.0, 15.0, -30.0, 15.0, -5.0, 20.0, 0.0, 15.0, 5.0, 15.0, 30.0, 10.0, 10.0
+      };
+  private Random random = new Random();
 
   public GameController() {
     System.out.println("Game");
     stage.setTitle("Space Invaders");
+    Pane pane = new Pane();
+    pane.setPrefSize(1100, 720);
+    pane.setBackground(
+        new Background(new BackgroundFill(Color.web("#000000"), CornerRadii.EMPTY, Insets.EMPTY)));
+    Polygon[][] enemies = new Polygon[8][16];
+    for (int i = 0; i < 7; i++) {
+      for (int j = 0; j < 15; j++) {
+        enemies[i][j] = new Polygon(random.nextBoolean() ? enemy1 : enemy2);
+        switch (random.nextInt(4)) {
+          case 0:
+            enemies[i][j].setFill(Color.web("#800000"));
+            break;
+          case 1:
+            enemies[i][j].setFill(Color.web("#808000"));
+            break;
+          case 2:
+            enemies[i][j].setFill(Color.web("#008000"));
+            break;
+          case 3:
+            enemies[i][j].setFill(Color.web("#FF00FF"));
+            break;
+        }
+        enemies[i][j].setLayoutX(40 + j * 68);
+        enemies[i][j].setLayoutY(40 + i * 70);
+        pane.getChildren().add(enemies[i][j]);
+      }
+    }
+    Polygon ship = new Polygon(random.nextBoolean() ? ship1 : ship2);
+    ship.setFill(Color.web("#05719d"));
+    ship.setLayoutX(400);
+    ship.setLayoutY(650);
+    pane.getChildren().add(ship);
+    Scene scene = new Scene(pane, 1100, 720);
+    stage.setScene(scene);
   }
 }

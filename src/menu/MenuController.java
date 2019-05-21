@@ -1,12 +1,10 @@
 package menu;
 
+import game.GameController;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import java.io.IOException;
+
 import java.util.Optional;
 
 import static main.Main.stage;
@@ -19,9 +17,8 @@ public class MenuController {
   }
 
   @FXML
-  private void playClick() throws IOException {
-    Parent parent = new FXMLLoader().load(getClass().getResource("../game/game.fxml").openStream());
-    stage.setScene(new Scene(parent, 740, 550));
+  private void playClick() {
+    new GameController();
   }
 
   @FXML
