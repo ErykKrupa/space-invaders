@@ -18,7 +18,7 @@ public class MenuController {
 
   @FXML
   private void playClick() {
-    Game.getInstance();
+    Game.createInstance();
   }
 
   @FXML

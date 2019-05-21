@@ -6,7 +6,6 @@ import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -27,47 +26,25 @@ import static main.Main.stage;
 public class Game implements Runnable {
   private Pane pane;
   private Polygon ship;
-  List<LinkedList<Polygon>> enemies;
   private Direction shipDirection = Direction.NONE;
-  private Direction enemiesDirection = Direction.RIGHT;
-  private int enemiesDirectionTimer = 180;
   private List<Circle> shipShots = new LinkedList<>();
-  private int shipShotTimer = 50;
+  private int shipShotTimer = 30;
+  private int gas;
+  private List<LinkedList<Polygon>> enemies;
+  private Direction enemiesDirection = Direction.RIGHT;
   private List<Circle> enemiesShots = new LinkedList<>();
+  private int enemiesDirectionTimer = 180;
   private Boolean running = false;
-
-  private double[] ship1 =
-      new double[] {
-        -25.0, 20.0, -20.0, -5.0, -15.0, 10.0, -10.0, 5.0, 0.0, -40.0, 10.0, 5.0, 15.0, 10.0, 20.0,
-        -5.0, 25.0, 20.0, 0.0, 15.0
-      };
-  private double[] ship2 =
-      new double[] {
-        -25.0, 20.0, -12.0, -30.0, -5.0, 5.0, 0.0, -10.0, 5.0, 5.0, 12.0, -30.0, 25.0, 20.0
-      };
-  private double[] enemy1 =
-      new double[] {
-        -5.0, 10.0, -10.0, 30.0, -10.0, 10.0, -20.0, 0.0, -10.0, -10.0, 10.0, -10.0, 20.0, 0.0,
-        10.0, 10.0, 10.0, 30.0, 5.0, 10.0
-      };
-  private double[] enemy2 =
-      new double[] {
-        -10.0, 10.0, -15.0, 30.0, -15.0, 5.0, -20.0, 0.0, -15.0, -5.0, -15.0, -30.0, -10.0, -10.0,
-        10.0, -10.0, 15.0, -30.0, 15.0, -5.0, 20.0, 0.0, 15.0, 5.0, 15.0, 30.0, 10.0, 10.0
-      };
-
   private Random random = new Random();
-
   private static Game instance = null;
 
-  public static Game getInstance() {
+  public static void createInstance() {
     if (instance == null) {
       instance = new Game();
     }
-    return instance;
   }
 
-  public static void destroyInstance() {
+  private static void destroyInstance() {
     instance = null;
   }
 
@@ -82,7 +59,18 @@ public class Game implements Runnable {
     for (int i = 0; i < 7; i++) {
       enemies.add(new LinkedList<>());
       for (int j = 0; j < 15; j++) {
-        enemies.get(i).add(new Polygon(random.nextBoolean() ? enemy1 : enemy2));
+        double[] enemyPattern1 =
+            new double[] {
+              -5.0, 10.0, -10.0, 30.0, -10.0, 10.0, -20.0, 0.0, -10.0, -10.0, 10.0, -10.0, 20.0,
+              0.0, 10.0, 10.0, 10.0, 30.0, 5.0, 10.0
+            };
+        double[] enemyPattern2 =
+            new double[] {
+              -10.0, 10.0, -15.0, 30.0, -15.0, 5.0, -20.0, 0.0, -15.0, -5.0, -15.0, -30.0, -10.0,
+              -10.0, 10.0, -10.0, 15.0, -30.0, 15.0, -5.0, 20.0, 0.0, 15.0, 5.0, 15.0, 30.0, 10.0,
+              10.0
+            };
+        enemies.get(i).add(new Polygon(random.nextBoolean() ? enemyPattern1 : enemyPattern2));
         switch (random.nextInt(4)) {
           case 0:
             enemies.get(i).get(j).setFill(Color.web("#800000"));
@@ -102,14 +90,23 @@ public class Game implements Runnable {
         pane.getChildren().add(enemies.get(i).get(j));
       }
     }
-    ship = new Polygon(random.nextBoolean() ? ship1 : ship1);
+    double[] shipPattern1 =
+        new double[] {
+          -25.0, 20.0, -20.0, -5.0, -15.0, 10.0, -10.0, 5.0, 0.0, -40.0, 10.0, 5.0, 15.0, 10.0,
+          20.0, -5.0, 25.0, 20.0, 0.0, 15.0
+        };
+    double[] shipPattern2 =
+        new double[] {
+          -25.0, 20.0, -12.0, -30.0, -5.0, 5.0, 0.0, -10.0, 5.0, 5.0, 12.0, -30.0, 25.0, 20.0, 0.0,
+          15.0
+        };
+    ship = new Polygon(random.nextBoolean() ? shipPattern1 : shipPattern2);
     ship.setFill(Color.web("#05719d"));
     ship.setLayoutX(400);
     ship.setLayoutY(680);
     pane.getChildren().add(ship);
     Scene scene = new Scene(pane, 1100, 720);
     stage.setScene(scene);
-
     KeyCombination keyLeft = new KeyCodeCombination(KeyCode.LEFT);
     KeyCombination keyRight = new KeyCodeCombination(KeyCode.RIGHT);
     KeyCombination keySpace = new KeyCodeCombination(KeyCode.SPACE);
@@ -130,13 +127,11 @@ public class Game implements Runnable {
     NONE
   }
 
-  private int gas;
-
   private void setShipDirection(Direction shipDirection) {
     if (this.shipDirection != shipDirection) {
       gas = 25;
-    } else if (gas < 3) {
-      gas = 10;
+    } else if (gas < 5) {
+      gas = 5;
     }
     this.shipDirection = shipDirection;
   }
@@ -146,14 +141,8 @@ public class Game implements Runnable {
       Circle shot = new Circle(ship.getLayoutX(), ship.getLayoutY(), 5, Color.web("#32CD32"));
       pane.getChildren().add(shot);
       shipShots.add(shot);
-      shipShotTimer = 40;
+      shipShotTimer = 30;
     }
-  }
-
-  private void enemyShot(Polygon enemy) {
-    Circle shot = new Circle(enemy.getLayoutX(), enemy.getLayoutY(), 5, Color.web("#ff0000"));
-    pane.getChildren().add(shot);
-    enemiesShots.add(shot);
   }
 
   @Override
@@ -168,96 +157,11 @@ public class Game implements Runnable {
       Platform.runLater(
           () -> {
             if (running) {
-              if (enemiesDirectionTimer <= 0) {
-                enemiesDirection =
-                    enemiesDirection == Direction.RIGHT ? Direction.LEFT : Direction.RIGHT;
-                for (LinkedList<Polygon> enemiesRow : enemies) {
-                  for (Polygon enemy : enemiesRow) {
-                    enemy.setLayoutY(enemy.getLayoutY() + 5);
-                  }
-                }
-                enemiesDirectionTimer = 180;
-              }
-              enemiesDirectionTimer--;
-              for (LinkedList<Polygon> enemiesRow : enemies) {
-                for (Polygon enemy : enemiesRow) {
-                  switch (enemiesDirection) {
-                    case LEFT:
-                      enemy.setLayoutX(enemy.getLayoutX() - 0.5);
-                      break;
-                    case RIGHT:
-                      enemy.setLayoutX(enemy.getLayoutX() + 0.5);
-                      break;
-                  }
-                  if (random.nextDouble() < 0.0015) {
-                    enemyShot(enemy);
-                  }
-                }
-              }
-              switch (shipDirection) {
-                case LEFT:
-                  if (ship.getLayoutX() > 25) {
-                    ship.setLayoutX(ship.getLayoutX() - 5);
-                  }
-                  break;
-                case RIGHT:
-                  if (ship.getLayoutX() < 1075) {
-                    ship.setLayoutX(ship.getLayoutX() + 5);
-                  }
-                  break;
-              }
-              if (gas == 0) {
-                shipDirection = Direction.NONE;
-              } else {
-                gas--;
-              }
-              if (shipShotTimer > 0) {
-                shipShotTimer--;
-              }
-              Iterator<Circle> shotIterator = shipShots.iterator();
-              while (shotIterator.hasNext()) {
-                Circle shot = shotIterator.next();
-                if (shot.getCenterY() < -20) {
-                  shotIterator.remove();
-                } else {
-                  shot.setCenterY(shot.getCenterY() - 5);
-                  Iterator<LinkedList<Polygon>> enemiesRowIterator = enemies.iterator();
-                  while (enemiesRowIterator.hasNext()) {
-                    Iterator<Polygon> enemyIterator = enemiesRowIterator.next().iterator();
-                    while (enemyIterator.hasNext()) {
-                      Polygon enemy = enemyIterator.next();
-                      if (Math.abs(shot.getCenterX() - enemy.getLayoutX()) < 20
-                              && Math.abs(shot.getCenterY() - enemy.getLayoutY()) < 20) {
-                        enemy.setOpacity(0.0);
-                        enemyIterator.remove();
-                      }
-                    }
-                  }
-                }
-              }
-              shotIterator = enemiesShots.iterator();
-              while (shotIterator.hasNext()) {
-                Circle shot = shotIterator.next();
-                if (shot.getCenterY() > 740) {
-                  shotIterator.remove();
-                } else {
-                  shot.setCenterY(shot.getCenterY() + 5);
-                  if (Math.abs(shot.getCenterX() - ship.getLayoutX()) < 20
-                      && Math.abs(shot.getCenterY() - ship.getLayoutY()) < 20) {
-                    running = false;
-                    createAndShowAlert("Game Over", "Your ship has been destroyed!");
-                    Parent parent;
-                    try {
-                      parent =
-                          new FXMLLoader()
-                              .load(getClass().getResource("../menu/menu.fxml").openStream());
-                      stage.setScene(new Scene(parent, 740, 550));
-                    } catch (IOException ignored) {
-                    }
-                    destroyInstance();
-                  }
-                }
-              }
+              moveEnemies();
+              moveShip();
+              moveShots();
+              checkCollisions();
+              loadCannon();
             }
           });
       elapsedTime = System.nanoTime() - startTime;
@@ -271,11 +175,141 @@ public class Game implements Runnable {
     }
   }
 
+  private void moveEnemies() {
+    if (enemiesDirectionTimer <= 0) {
+      enemiesDirection = enemiesDirection == Direction.RIGHT ? Direction.LEFT : Direction.RIGHT;
+      for (LinkedList<Polygon> enemiesRow : enemies) {
+        for (Polygon enemy : enemiesRow) {
+          enemy.setLayoutY(enemy.getLayoutY() + 5);
+        }
+      }
+      enemiesDirectionTimer = 180;
+    }
+    enemiesDirectionTimer--;
+    for (LinkedList<Polygon> enemiesRow : enemies) {
+      for (Polygon enemy : enemiesRow) {
+        switch (enemiesDirection) {
+          case LEFT:
+            enemy.setLayoutX(enemy.getLayoutX() - 0.5);
+            break;
+          case RIGHT:
+            enemy.setLayoutX(enemy.getLayoutX() + 0.5);
+            break;
+        }
+        if (random.nextDouble() < 0.0015) {
+          enemyShot(enemy);
+        }
+      }
+    }
+  }
+
+  private void enemyShot(Polygon enemy) {
+    Circle shot = new Circle(enemy.getLayoutX(), enemy.getLayoutY(), 5, Color.web("#ff0000"));
+    pane.getChildren().add(shot);
+    enemiesShots.add(shot);
+  }
+
+  private void moveShip() {
+    switch (shipDirection) {
+      case LEFT:
+        if (ship.getLayoutX() > 25) {
+          ship.setLayoutX(ship.getLayoutX() - 5);
+        }
+        break;
+      case RIGHT:
+        if (ship.getLayoutX() < 1075) {
+          ship.setLayoutX(ship.getLayoutX() + 5);
+        }
+        break;
+    }
+    if (gas == 0) {
+      shipDirection = Direction.NONE;
+    } else {
+      gas--;
+    }
+  }
+
+  private void moveShots() {
+    Iterator<Circle> shotIterator = shipShots.iterator();
+    while (shotIterator.hasNext()) {
+      Circle shot = shotIterator.next();
+      if (shot.getCenterY() < -20) {
+        shotIterator.remove();
+      } else {
+        shot.setCenterY(shot.getCenterY() - 5);
+      }
+    }
+    shotIterator = enemiesShots.iterator();
+    while (shotIterator.hasNext()) {
+      Circle shot = shotIterator.next();
+      if (shot.getCenterY() > 740) {
+        shotIterator.remove();
+      } else {
+        shot.setCenterY(shot.getCenterY() + 5);
+      }
+    }
+  }
+
+  private void checkCollisions() {
+    Iterator<Circle> shotIterator = shipShots.iterator();
+    while (shotIterator.hasNext()) {
+      Circle shot = shotIterator.next();
+      for (int i = 0; i < enemies.size(); i++) {
+        for (int j = 0; j < enemies.get(i).size(); j++) {
+          Polygon enemy = enemies.get(i).get(j);
+          if (Math.abs(shot.getCenterX() - enemy.getLayoutX()) < 20
+              && Math.abs(shot.getCenterY() - enemy.getLayoutY()) < 20) {
+            enemy.setOpacity(0.0);
+            enemies.get(i).remove(j);
+            shot.setOpacity(0.0);
+            shotIterator.remove();
+            if (enemies.get(i).size() == 0) {
+              enemies.remove(i);
+              if (enemies.size() == 0) {
+                running = false;
+                createAndShowAlert("You win!", "You have decimated all enemies!");
+                backToMenu();
+                destroyInstance();
+              }
+            }
+            break;
+          }
+        }
+      }
+    }
+    shotIterator = enemiesShots.iterator();
+    while (shotIterator.hasNext()) {
+      Circle shot = shotIterator.next();
+      if (Math.abs(shot.getCenterX() - ship.getLayoutX()) < 22
+          && Math.abs(shot.getCenterY() - ship.getLayoutY()) < 22) {
+        running = false;
+        createAndShowAlert("Game Over", "Your ship has been destroyed!");
+        backToMenu();
+        destroyInstance();
+      }
+    }
+  }
+
   private void createAndShowAlert(String title, String content) {
     Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
     alert.setTitle(title);
     alert.setHeaderText(null);
     alert.setContentText(content);
     alert.showAndWait();
+  }
+
+  private void backToMenu() {
+    Parent parent;
+    try {
+      parent = new FXMLLoader().load(getClass().getResource("../menu/menu.fxml").openStream());
+      stage.setScene(new Scene(parent, 740, 550));
+    } catch (IOException ignored) {
+    }
+  }
+
+  private void loadCannon() {
+    if (shipShotTimer > 0) {
+      shipShotTimer--;
+    }
   }
 }
