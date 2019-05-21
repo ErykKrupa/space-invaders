@@ -1,6 +1,6 @@
 package menu;
 
-import game.GameController;
+import game.Game;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -18,7 +18,7 @@ public class MenuController {
 
   @FXML
   private void playClick() {
-    new GameController();
+    Game.getInstance();
   }
 
   @FXML
