@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.*?>
+<Pane xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1"
+      prefHeight="550.0" prefWidth="740.0" style="-fx-background-color: black;"
+      fx:controller="menu.MenuController">
+    <Label alignment="CENTER" layoutX="301.0" layoutY="25.0" prefHeight="51.0" prefWidth="139.0" text="Welcome in"
+           textAlignment="CENTER" textFill="WHITE">
+        <font>
+            <Font name="Monotype Corsiva" size="18.0"/>
+        </font>
+    </Label>
+    <Label alignment="CENTER" layoutX="189.0" layoutY="50.0" prefHeight="62.0" prefWidth="364.0" text="Space Invaders"
+           textFill="WHITE">
+        <font>
+            <Font name="Monotype Corsiva" size="50.0"/>
+        </font>
+    </Label>
+    <Button layoutX="264.0" layoutY="199.0" onAction="#playClick" prefHeight="51.0" prefWidth="214.0" text="Play">
+        <font>
+            <Font name="Monotype Corsiva" size="25.0"/>
+        </font>
+    </Button>
+    <Button layoutX="264.0" layoutY="367.0" onAction="#creditClick" prefHeight="51.0" prefWidth="214.0" text="Credit">
+        <font>
+            <Font name="Monotype Corsiva" size="25.0"/>
+        </font>
+    </Button>
+    <Button layoutX="264.0" layoutY="431.0" onAction="#exitClick" prefHeight="36.0" prefWidth="214.0" text="Exit">
+        <font>
+            <Font name="Monotype Corsiva" size="25.0"/>
+        </font>
+    </Button>
+</Pane>

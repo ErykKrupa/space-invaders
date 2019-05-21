@@ -1,4 +1,4 @@
-package sample;
+package menu;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -6,20 +6,22 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import javafx.stage.Stage;
-
 import java.io.IOException;
 import java.util.Optional;
 
+import static main.Main.stage;
+
 public class MenuController {
-  public static Stage menuStage = new Stage();
+
+  public MenuController() {
+    System.out.println("Menu");
+    stage.setTitle("Menu");
+  }
 
   @FXML
   private void playClick() throws IOException {
-    menuStage.setTitle("Difficulty");
-    // Parent parent = FXMLLoader.load(getClass().getResource("game.fxml"));
-    // menuStage.setScene(new Scene(parent));
-    System.out.println("Play!");
+    Parent parent = new FXMLLoader().load(getClass().getResource("../game/game.fxml").openStream());
+    stage.setScene(new Scene(parent, 740, 550));
   }
 
   @FXML
